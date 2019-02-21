@@ -1,6 +1,3 @@
--- To włącza pewne rozszerzenie składni, które czyni korzystanie z Haskellowych
--- rekordów sporo wygodniejszym w pewnych sytuacjach.
--- https://ocharles.org.uk/posts/2014-12-04-record-wildcards.html
 {-# LANGUAGE RecordWildCards #-}
 module Main where
 
