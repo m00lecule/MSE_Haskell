@@ -89,6 +89,9 @@ formB Problem{..} mesh u u' v v' =
     int (b.*u'.*v .- a.*u'.*v' .+ c.*u.*v) - beta * (u 0) * (v 0)
     where int = integrate' (domain mesh) quadPoints
 
+formBconst :: Problem -> Fun -> Fun -> Val
+formBconst Problem{..} u v = - beta * (u 0) * (v 0)
+
 formL :: Problem -> Mesh -> Fun -> Val
 formL Problem{..} mesh v =
     int (f .* v) - gamma * (v 0)
@@ -104,8 +107,11 @@ solve prob@Problem{..} mesh = shift .+ linearCombination mesh coeffs
     where coeffs = matB <\> vecL
           matB = build (n, n) entryB :: Matrix Double
           vecL = build n      entryL :: Vector Double
-          entryB i j = b (u j) (u' j) (u i) (u' i)
+          entryB i j
+            | abs ( i - j ) <= 1 = b (u j) (u' j) (u i) (u' i)
+            | otherwise = bConst (u j) (u i)
           entryL i   = l (u i) - b shift shift' (u i) (u' i)
+          bConst = formBconst prob
           b = formB prob mesh
           l = formL prob mesh
           shift  = const u0
